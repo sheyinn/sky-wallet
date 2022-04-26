@@ -1,0 +1,33 @@
+{
+  "name": "sky-wallet",
+  "version": "1.0.0",
+  "description": "Apollo Graphql and Vue coding challenge",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sheyinn/sky-wallet.git"
+  },
+  "keywords": [
+    "apollo",
+    "graphql",
+    "postgresql",
+    "vue"
+  ],
+  "author": "Sheyin Nkom",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sheyinn/sky-wallet/issues"
+  },
+  "homepage": "https://github.com/sheyinn/sky-wallet#readme",
+  "dependencies": {
+    "@prisma/client": "^3.13.0",
+    "apollo-server": "^3.6.7",
+    "graphql": "^16.4.0"
+  },
+  "devDependencies": {
+    "prisma": "^3.13.0"
+  }
+}
