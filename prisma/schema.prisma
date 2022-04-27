@@ -16,7 +16,7 @@ model Account {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
-  Transactions Transaction[]
+  transactions Transaction[]
   @@map("accounts")
 }
 
@@ -27,7 +27,7 @@ model Category {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
-  Transaction Transaction[]
+  transactions Transaction[]
   @@map("categories")
 }
 
@@ -37,9 +37,9 @@ model Transaction {
   account         Account   @relation(fields: [accountId], references: [id])
   categoryId      String?   @db.VarChar(40)
   category        Category? @relation(fields: [categoryId], references: [id])
-  reference       String    @db.VarChar(150)
+  reference       String?   @db.VarChar(150)
   amount          Float
-  currency        String?   @db.VarChar(8)
+  currency        String    @db.VarChar(8)
   transactionDate DateTime
   createdAt       DateTime  @default(now())
   updatedAt       DateTime? @updatedAt
