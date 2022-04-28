@@ -60,7 +60,7 @@ export const Transaction = objectType({
     t.string("reference");
     t.nonNull.float("amount");
     t.nonNull.string("currency");
-    t.nonNull.dateTime("transactionDate");
+    t.nonNull.dateTime("date");
     t.nonNull.dateTime("createdAt");
     t.dateTime("updatedAt");
   },

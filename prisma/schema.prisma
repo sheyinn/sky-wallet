@@ -12,7 +12,7 @@ datasource db {
 
 model Account {
   id        String    @id @default(uuid())
-  username  String    @unique @db.VarChar(200)
+  name      String    @db.VarChar(200)
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
@@ -32,17 +32,17 @@ model Category {
 }
 
 model Transaction {
-  id              String    @id @default(uuid())
-  accountId       String    @db.VarChar(40)
-  account         Account   @relation(fields: [accountId], references: [id])
-  categoryId      String?   @db.VarChar(40)
-  category        Category? @relation(fields: [categoryId], references: [id])
-  reference       String?   @db.VarChar(150)
-  amount          Float
-  currency        String    @db.VarChar(8)
-  transactionDate DateTime
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime? @updatedAt
+  id         String    @id @default(uuid())
+  accountId  String?   @db.VarChar(40)
+  account    Account?  @relation(fields: [accountId], references: [id])
+  categoryId String?   @db.VarChar(40)
+  category   Category? @relation(fields: [categoryId], references: [id])
+  reference  String?   @db.VarChar(150)
+  amount     Float
+  currency   String    @db.VarChar(8)
+  date       DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt
 
   @@map("transactions")
 }

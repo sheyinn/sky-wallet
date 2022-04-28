@@ -42,9 +42,9 @@ type Transaction {
   category: Category
   createdAt: DateTime!
   currency: String!
+  date: DateTime!
   id: ID!
   reference: String
-  transactionDate: DateTime!
   updatedAt: DateTime
 }
 

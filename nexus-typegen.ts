@@ -67,9 +67,9 @@ export interface NexusGenObjects {
     amount: number; // Float!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     currency: string; // String!
+    date: NexusGenScalars['DateTime']; // DateTime!
     id: string; // ID!
     reference?: string | null; // String
-    transactionDate: NexusGenScalars['DateTime']; // DateTime!
     updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
   }
   TransactionList: { // root type
@@ -117,9 +117,9 @@ export interface NexusGenFieldTypes {
     category: NexusGenRootTypes['Category'] | null; // Category
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     currency: string; // String!
+    date: NexusGenScalars['DateTime']; // DateTime!
     id: string; // ID!
     reference: string | null; // String
-    transactionDate: NexusGenScalars['DateTime']; // DateTime!
     updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
   }
   TransactionList: { // field return type
@@ -157,9 +157,9 @@ export interface NexusGenFieldTypeNames {
     category: 'Category'
     createdAt: 'DateTime'
     currency: 'String'
+    date: 'DateTime'
     id: 'ID'
     reference: 'String'
-    transactionDate: 'DateTime'
     updatedAt: 'DateTime'
   }
   TransactionList: { // field return type name
