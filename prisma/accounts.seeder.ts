@@ -36,7 +36,7 @@ export const accountSeeder = async () => {
   });
 
   parser.on("end", async () => {
-    await prisma.account.createMany({ data: records, skipDuplicates: true });
+    await prisma.account.createMany({ data: records });
     console.log(
       `Successfully seeded accounts table with ${records.length} rows.`
     );

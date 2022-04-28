@@ -34,6 +34,18 @@ export const transactionSeeder = () => {
   parser.on("readable", async () => {
     let record;
     while ((record = parser.read()) !== null) {
+      const account = await prisma.account.findFirst({
+        where: { id: record.accountId },
+      });
+
+      if (!account) {
+        console.log(
+          "Skipping 'orphaned' transaction record with ID",
+          record.id
+        );
+        continue;
+      }
+
       let exists = await prisma.transaction.findFirst({
         where: { id: record.id },
       });
@@ -45,38 +57,26 @@ export const transactionSeeder = () => {
           date: new Date(record.date),
           reference: record.reference,
           currency: record.currency,
+          account: {
+            connect: { id: record.accountId },
+          },
         };
 
-        if (record.accountId) {
-          data.accountId = {
-            connectOrCreate: {
-              where: { id: record.accountId },
-              data: { id: record.accountId },
-            },
-          };
-        }
-
         if (record.categoryId) {
-          data.categoryId = {
-            connectOrCreate: {
-              where: { id: record.categoryId },
-              data: { id: record.categoryId },
-            },
-          };
+          const category = await prisma.category.findFirst({
+            where: { id: record.categoryId },
+          });
+
+          if (category)
+            data.category = {
+              connect: { id: record.categoryId },
+            };
         }
 
-        console.log("Record", record);
+        console.log("Adding transaction with ID: ", record.id);
+        records.push(data);
 
-        await prisma.transaction.create({ data });
-
-        // const updateParams = {
-        //   where: { id: data.id },
-        //   data: {
-        //     account: { connect: { id: data.id } },
-        //     category: { connect: { id: data.id } },
-        //   },
-        // };
-        // await prisma.transaction.update(updateParams);
+        // await prisma.transaction.create({ data });
       }
     }
   });
@@ -86,6 +86,7 @@ export const transactionSeeder = () => {
   });
 
   parser.on("end", async () => {
+    await prisma.transaction.createMany({ data: records });
     console.log(
       `Successfully seeded transactions table with ${records.length} rows.`
     );
