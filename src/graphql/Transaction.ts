@@ -79,23 +79,29 @@ export const TransactionsQuery = extendType({
         orderBy: arg({ type: list(nonNull(TransactionOrderByInput)) }),
       },
       async resolve(parent, args, context) {
-        const where = {
-          transactionDate: {
-            gte: args?.startMonth as Date | undefined,
-            lte: args?.endMonth as Date | undefined,
-          },
-        };
-
-        const transactions = await context.prisma.transaction.findMany({
-          where,
+        let query: any = {
           skip: args?.skip as number | undefined,
           take: args?.take as number | undefined,
           orderBy: args?.orderBy as
             | Prisma.Enumerable<Prisma.TransactionOrderByWithRelationInput>
             | undefined,
-        });
+        };
 
-        const count = await context.prisma.transaction.count({ where });
+        if (args?.startMonth && args?.endMonth) {
+          const where = {
+            date: {
+              gte: new Date(args.startMonth),
+              lte: new Date(args.endMonth),
+            },
+          };
+          query.where = where;
+        }
+
+        console.log(query);
+
+        const transactions = await context.prisma.transaction.findMany(query);
+
+        const count = await context.prisma.transaction.count(query);
         const id = `transaction-list:${JSON.stringify(args)}`;
 
         return { transactions, count, id };
