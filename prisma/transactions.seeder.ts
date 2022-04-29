@@ -4,10 +4,9 @@ import { parse } from "csv-parse";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const records: any = [];
 
 export const transactionSeeder = () => {
-  console.log("Starting transaction seeder...");
+  console.log("Starting transaction data import...");
 
   const csvFilePath = path.resolve(__dirname, "data/transactions.csv");
   const headers = [
@@ -38,45 +37,36 @@ export const transactionSeeder = () => {
         where: { id: record.accountId },
       });
 
-      if (!account) {
-        console.log(
-          "Skipping 'orphaned' transaction record with ID",
-          record.id
-        );
-        continue;
-      }
+      if (account) {
+        let exists = await prisma.transaction.findFirst({
+          where: { id: record.id },
+        });
 
-      let exists = await prisma.transaction.findFirst({
-        where: { id: record.id },
-      });
+        if (!exists) {
+          let data: any = {
+            id: record.id,
+            amount: parseFloat(record.amount),
+            date: new Date(record.date),
+            reference: record.reference,
+            currency: record.currency,
+            account: {
+              connect: { id: record.accountId },
+            },
+          };
 
-      if (!exists) {
-        let data: any = {
-          id: record.id,
-          amount: parseFloat(record.amount),
-          date: new Date(record.date),
-          reference: record.reference,
-          currency: record.currency,
-          account: {
-            connect: { id: record.accountId },
-          },
-        };
+          if (record.categoryId) {
+            const category = await prisma.category.findFirst({
+              where: { id: record.categoryId },
+            });
 
-        if (record.categoryId) {
-          const category = await prisma.category.findFirst({
-            where: { id: record.categoryId },
-          });
+            if (category)
+              data.category = {
+                connect: { id: record.categoryId },
+              };
+          }
 
-          if (category)
-            data.category = {
-              connect: { id: record.categoryId },
-            };
+          await prisma.transaction.create({ data });
         }
-
-        console.log("Adding transaction with ID: ", record.id);
-        records.push(data);
-
-        // await prisma.transaction.create({ data });
       }
     }
   });
@@ -85,11 +75,7 @@ export const transactionSeeder = () => {
     console.log(err.message);
   });
 
-  parser.on("end", async () => {
-    await prisma.transaction.createMany({ data: records });
-    console.log(
-      `Successfully seeded transactions table with ${records.length} rows.`
-    );
-    return Promise.resolve(1);
+  parser.on("end", () => {
+    console.log(`Successfully imported transactions data.`);
   });
 };

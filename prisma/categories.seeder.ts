@@ -4,10 +4,9 @@ import { parse } from "csv-parse";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const records: any = [];
 
-export const categorySeeder = async () => {
-  console.log("Starting category seeder...");
+export const categorySeeder = () => {
+  console.log("Starting category data import...");
 
   const csvFilePath = path.resolve(__dirname, "data/categories.csv");
   const headers = ["id", "name", "color"];
@@ -28,7 +27,9 @@ export const categorySeeder = async () => {
     while ((data = parser.read()) !== null) {
       let exists = await prisma.category.findFirst({ where: { id: data.id } });
 
-      if (!exists) records.push(data);
+      if (!exists) {
+        await prisma.category.create({ data });
+      }
     }
   });
 
@@ -36,12 +37,7 @@ export const categorySeeder = async () => {
     console.log(err.message);
   });
 
-  parser.on("end", async () => {
-    await prisma.category.createMany({ data: records });
-    console.log(
-      `Successfully seeded categories table with ${records.length} rows.`
-    );
-
-    return Promise.resolve(1);
+  parser.on("end", () => {
+    console.log(`Successfully imported categories data.`);
   });
 };

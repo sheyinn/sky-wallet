@@ -4,10 +4,9 @@ import { parse } from "csv-parse";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const records: any = [];
 
-export const accountSeeder = async () => {
-  console.log("Starting account seeder...");
+export const accountSeeder = () => {
+  console.log("Starting account data import...");
 
   const csvFilePath = path.resolve(__dirname, "data/accounts.csv");
   const headers = ["id", "name"];
@@ -27,7 +26,8 @@ export const accountSeeder = async () => {
     let data;
     while ((data = parser.read()) !== null) {
       let exists = await prisma.account.findFirst({ where: { id: data.id } });
-      if (!exists) records.push(data);
+
+      if (!exists) await prisma.account.create({ data });
     }
   });
 
@@ -35,11 +35,7 @@ export const accountSeeder = async () => {
     console.log(err.message);
   });
 
-  parser.on("end", async () => {
-    await prisma.account.createMany({ data: records });
-    console.log(
-      `Successfully seeded accounts table with ${records.length} rows.`
-    );
-    return Promise.resolve(1);
+  parser.on("end", () => {
+    console.log(`Successfully imported accounts data.`);
   });
 };
